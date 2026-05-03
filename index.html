@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced PRD · Student Management System</title>
+<title>Project PRD · Student Management System</title>
 <style>
   :root {
     --bg: #0a0a1e;
@@ -83,6 +83,65 @@
   @keyframes linePulse {
     from { opacity:0.3; width:30%; } to { opacity:1; width:80%; }
   }
+
+  /* Student Info Card */
+  .student-card {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(180,77,255,0.08));
+    border: 1px solid var(--neon-cyan);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 25px rgba(0,240,255,0.2);
+  }
+  .student-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #00f0ff, #b44dff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0a0a1e;
+    text-shadow: 0 0 8px rgba(255,255,255,0.5);
+    box-shadow: 0 0 20px var(--neon-cyan);
+    border: 2px solid var(--neon-cyan);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .student-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px var(--neon-purple);
+  }
+  .student-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .student-name {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #fff, #00f0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 8px rgba(0,240,255,0.5);
+  }
+  .student-meta {
+    font-size: 0.95rem;
+    color: #ccc;
+  }
+  .student-meta span {
+    color: var(--neon-pink);
+    font-weight: 600;
+    margin-right: 0.3rem;
+  }
+
+  /* Cards */
   .card {
     background: var(--card-bg);
     border: 1px solid rgba(180,77,255,0.3);
@@ -148,6 +207,7 @@
     .grid-2 { grid-template-columns: 1fr; }
     .doc-title { font-size: 2rem; }
     .content { padding: 1rem; }
+    .student-card { flex-direction: column; text-align: center; }
   }
   ul, ol { padding-left: 1.5rem; }
   li { margin-bottom: 0.3rem; }
@@ -180,10 +240,21 @@
 <body>
 <canvas id="particle-canvas"></canvas>
 <div class="content">
-  <div class="doc-title">ADVANCED PRODUCT REQUIREMENTS DOCUMENT</div>
+  <div class="doc-title">PROJECT REQUIREMENTS DOCUMENT</div>
   <div class="subtitle">Next-Generation Student Management System</div>
   <div class="sub-subtitle">FastAPI + Pydantic · Level-2 GenAI Programme · LearnAI Institute</div>
   <div class="glow-line"></div>
+
+  <!-- Student Info Card -->
+  <div class="student-card">
+    <div class="student-avatar">AR</div>
+    <div class="student-details">
+      <div class="student-name">AdnanRaza</div>
+      <div class="student-meta"><span>Student ID:</span> 0267</div>
+      <div class="student-meta"><span>Class:</span> Advanced AI Learning</div>
+      <div class="student-meta"><span>Type:</span> Class Work (Project PRD)</div>
+    </div>
+  </div>
 
   <!-- Meta -->
   <div class="card">
