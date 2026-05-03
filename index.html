@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced PRD · Student Management System</title>
+<style>
+  :root {
+    --bg: #0a0a1e;
+    --card-bg: rgba(18, 18, 45, 0.94);
+    --neon-cyan: #00f0ff;
+    --neon-purple: #b44dff;
+    --neon-pink: #ff4d6d;
+    --text: #e0e0ff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+    position: relative;
+  }
+  #particle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .content {
+    position: relative;
+    z-index: 2;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem 2rem;
+  }
+  .doc-title {
+    font-size: 2.4rem;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #00f0ff, #b44dff, #ff4d6d, #00f0ff);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 6s ease infinite, titleFloat 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(0,240,255,0.7));
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+  @keyframes gradientShift {
+    0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+  }
+  @keyframes titleFloat {
+    0%,100%{transform:translateY(0px)} 50%{transform:translateY(-4px)}
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 25px var(--neon-purple);
+    margin-bottom: 0.2rem;
+  }
+  .sub-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #aaaaff;
+    margin-bottom: 2rem;
+    letter-spacing: 0.5px;
+  }
+  .glow-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+    width: 60%;
+    margin: 0 auto 2.5rem auto;
+    border-radius: 2px;
+    opacity: 0.8;
+    animation: linePulse 3s infinite alternate;
+  }
+  @keyframes linePulse {
+    from { opacity:0.3; width:30%; } to { opacity:1; width:80%; }
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid rgba(180,77,255,0.3);
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6), inset 0 0 18px rgba(0,240,255,0.04);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 35px rgba(0,240,255,0.35), 0 18px 45px rgba(0,0,0,0.7);
+  }
+  h2 {
+    font-size: 1.7rem;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan);
+    border-left: 5px solid var(--neon-purple);
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  h3 {
+    color: var(--neon-pink);
+    font-size: 1.3rem;
+    margin: 1.3rem 0 0.5rem;
+    text-shadow: 0 0 6px rgba(255,77,109,0.4);
+  }
+  pre {
+    background: rgba(0,0,0,0.55);
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(180,77,255,0.5);
+    overflow-x: auto;
+    font-size: 0.9rem;
+    color: #f0f0ff;
+    box-shadow: 0 0 16px rgba(0,240,255,0.15);
+    margin: 1rem 0;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  code { font-family: 'Fira Code', 'Consolas', monospace; }
+  .glow-text {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan), 0 0 18px var(--neon-purple);
+    font-weight: 600;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.15em 0.8em;
+    border-radius: 20px;
+    background: rgba(180,77,255,0.2);
+    color: var(--neon-purple);
+    border: 1px solid var(--neon-purple);
+    font-size: 0.8rem;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 700px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .doc-title { font-size: 2rem; }
+    .content { padding: 1rem; }
+  }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  table.meta {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8rem 0;
+  }
+  table.meta td {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  table.meta td:first-child {
+    color: var(--neon-cyan);
+    font-weight: 600;
+    width: 200px;
+  }
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    color: #6a6aaa;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0a1e; }
+  ::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 4px; }
+</style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+<div class="content">
+  <div class="doc-title">ADVANCED PRODUCT REQUIREMENTS DOCUMENT</div>
+  <div class="subtitle">Next-Generation Student Management System</div>
+  <div class="sub-subtitle">FastAPI + Pydantic · Level-2 GenAI Programme · LearnAI Institute</div>
+  <div class="glow-line"></div>
+
+  <!-- Meta -->
+  <div class="card">
+    <table class="meta">
+      <tr><td>Version</td><td>1.0 — Initial Release</td></tr>
+      <tr><td>Date</td><td>May 2026</td></tr>
+      <tr><td>Status</td><td><span class="badge">Draft — Ready for Review</span></td></tr>
+      <tr><td>Audience</td><td>Student Developers, API Engineers</td></tr>
+    </table>
+  </div>
+
+  <!-- 1. Project Introduction -->
+  <div class="card">
+    <h2>1. Project Introduction</h2>
+    <p>The <span class="glow-text">Student Management System</span> is a basic API project developed using FastAPI and Pydantic. This system manages student records using GET and POST APIs. It focuses on basic concepts like FastAPI, Pydantic models, validation, JSON handling, path parameters, query parameters, and API testing using Swagger Docs.</p>
+  </div>
+
+  <!-- 2. Project Objectives -->
+  <div class="card">
+    <h2>2. Project Objectives</h2>
+    <ul>
+      <li>Understand FastAPI basics</li>
+      <li>Learn GET APIs to fetch data</li>
+      <li>Learn POST APIs to add data</li>
+      <li>Use Pydantic BaseModel for validation</li>
+      <li>Understand JSON request and response</li>
+      <li>Practice path and query parameters</li>
+      <li>Validate input using Field constraints</li>
+      <li>Test APIs using Swagger UI</li>
+    </ul>
+  </div>
+
+  <!-- 3. Technologies Used -->
+  <div class="card">
+    <h2>3. Technologies Used</h2>
+    <ul>
+      <li>Python</li>
+      <li>FastAPI</li>
+      <li>Pydantic</li>
+      <li>Uvicorn</li>
+      <li>JSON</li>
+    </ul>
+  </div>
+
+  <!-- 4. Functional Requirements -->
+  <div class="card">
+    <h2>4. Functional Requirements</h2>
+    <div class="grid-2">
+      <div>
+        <h3>GET APIs</h3>
+        <ul>
+          <li>Fetch all students</li>
+          <li>Fetch a student using ID</li>
+        </ul>
+      </div>
+      <div>
+        <h3>POST APIs</h3>
+        <ul>
+          <li>Add new student records</li>
+          <li>Store student data in list format</li>
+          <li>Validate data before storing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Student Model (Pydantic) -->
+  <div class="card">
+    <h2>5. Student Model (Pydantic)</h2>
+    <pre><code>from pydantic import BaseModel, Field
+
+class Student(BaseModel):
+    name: str = Field(min_length=1, max_length=50)
+    age: int = Field(gt=0, lt=120)
+    class_name: str
+    is_active: bool = True</code></pre>
+  </div>
+
+  <!-- 6. Complete FastAPI Implementation -->
+  <div class="card">
+    <h2>6. Complete FastAPI Implementation</h2>
+    <pre><code>from fastapi import FastAPI
+from pydantic import BaseModel, Field
+
+app = FastAPI()
+
+students = []
+products = []
+
+class Student(BaseModel):
+    name: str = Field(min_length=1, max_length=50)
+    age: int = Field(gt=0, lt=120)
+    class_name: str
+    is_active: bool = True
+
+class Product(BaseModel):
+    name: str = Field(min_length=1)
+    price: float = Field(gt=0)
+    quantity: int = Field(ge=0)
+    in_stock: bool = True
+
+@app.get("/students")
+def get_students():
+    return students
+
+@app.get("/students/{id}")
+def get_student(id: int):
+    if id &lt; 1 or id &gt; len(students):
+        return {"error": "Student not found"}
+    return students[id - 1]
+
+@app.post("/students")
+def add_student(student: Student):
+    new_student = {
+        "id": len(students) + 1,
+        "name": student.name,
+        "age": student.age,
+        "class_name": student.class_name,
+        "is_active": student.is_active
+    }
+    students.append(new_student)
+    return new_student
+
+@app.post("/products")
+def add_product(product: Product):
+    new_product = {
+        "name": product.name,
+        "price": product.price,
+        "quantity": product.quantity,
+        "in_stock": product.in_stock
+    }
+    products.append(new_product)
+    return new_product</code></pre>
+  </div>
+
+  <!-- 7. API Endpoints Summary -->
+  <div class="card">
+    <h2>7. API Endpoints Summary</h2>
+    <ul>
+      <li><strong>GET /students</strong> — returns all students</li>
+      <li><strong>GET /students/{id}</strong> — returns student by ID</li>
+      <li><strong>POST /students</strong> — adds new student</li>
+      <li><strong>POST /products</strong> — adds new product</li>
+    </ul>
+  </div>
+
+  <!-- 8. Validation Features -->
+  <div class="card">
+    <h2>8. Validation Features</h2>
+    <ul>
+      <li>Required field checking</li>
+      <li>String length validation</li>
+      <li>Number validation (positive values only)</li>
+      <li>Automatic error messages (422 response)</li>
+    </ul>
+  </div>
+
+  <!-- 9. Testing Process -->
+  <div class="card">
+    <h2>9. Testing Process</h2>
+    <p>All APIs are tested using Swagger UI at:</p>
+    <p><code>http://localhost:8000/docs</code></p>
+    <p>Using Swagger you can:</p>
+    <ul>
+      <li>Test GET requests</li>
+      <li>Send POST requests with JSON</li>
+      <li>See validation errors</li>
+      <li>View API responses</li>
+    </ul>
+  </div>
+
+  <!-- 10. Practice Exercises & Solutions -->
+  <div class="card">
+    <h2>10. Practice Exercises &amp; Solutions</h2>
+
+    <h3>Exercise 1 — Product Model</h3>
+    <pre><code>class Product(BaseModel):
+    name: str = Field(min_length=1)
+    price: float = Field(gt=0)
+    quantity: int = Field(ge=0)
+    in_stock: bool = True</code></pre>
+
+    <h3>Exercise 2 — Teacher Model</h3>
+    <pre><code>class Teacher(BaseModel):
+    name: str = Field(min_length=2, max_length=50)
+    subject: str
+    experience_years: int = Field(ge=0, le=50)
+    email: str | None = None</code></pre>
+
+    <h3>Exercise 3 — Product Endpoint</h3>
+    <pre><code>@app.post("/products")
+def add_product(product: Product):
+    return {
+        "name": product.name,
+        "price": product.price,
+        "quantity": product.quantity,
+        "in_stock": product.in_stock
+    }</code></pre>
+
+    <h3>Exercise 4 — Validation Testing</h3>
+    <p>If you send:</p>
+    <pre><code>{"name":"", "price":-100, "quantity":-5}</code></pre>
+    <p>Pydantic will return all validation errors automatically.</p>
+
+    <h3>Exercise 5 — Optional Fields (Book Model)</h3>
+    <pre><code>class Book(BaseModel):
+    title: str
+    author: str
+    description: str | None = None
+    tags: list[str] = []</code></pre>
+  </div>
+
+  <!-- 11. Final Project Summary -->
+  <div class="card">
+    <h2>11. Final Project Summary</h2>
+    <p>This project shows the basic implementation of FastAPI and Pydantic. It allows students to create, store, and manage data using APIs.</p>
+    <p>By using Pydantic models, data validation becomes easier and safer. The project also demonstrates how GET and POST APIs work with proper JSON handling and Swagger testing.</p>
+  </div>
+
+  <div class="footer">
+    LearnAI Institute · Level-2 GenAI Programme<br>
+    <span class="glow-text">“Type hints + BaseModel = Magic”</span>
+  </div>
+</div>
+
+<script>
+  // ══════════════════════════════════════
+  //  ULTRA-SMOOTH BLUE PARTICLE NETWORK
+  // ══════════════════════════════════════
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let lastTime = 0;
+  const fpsInterval = 1000 / 30;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initParticles();
+  }
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.size = Math.random() * 2.2 + 1.8;
+      this.alpha = 0.7;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0) this.x = canvas.width;
+      if (this.x > canvas.width) this.x = 0;
+      if (this.y < 0) this.y = canvas.height;
+      if (this.y > canvas.height) this.y = 0;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0, 180, 255, ${this.alpha})`;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = 'rgba(0, 180, 255, 0.7)';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    let count = Math.floor((canvas.width * canvas.height) / 19000);
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function drawConnections() {
+    for (let a = 0; a < particles.length; a++) {
+      for (let b = a+1; b < particles.length; b++) {
+        const dx = particles[a].x - particles[b].x;
+        const dy = particles[a].y - particles[b].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 110) {
+          const alpha = (1 - dist/110) * 0.35;
+          ctx.beginPath();
+          ctx.moveTo(particles[a].x, particles[a].y);
+          ctx.lineTo(particles[b].x, particles[b].y);
+          ctx.strokeStyle = `rgba(0, 200, 255, ${alpha})`;
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate(timestamp) {
+    requestAnimationFrame(animate);
+    const elapsed = timestamp - lastTime;
+    if (elapsed < fpsInterval) return;
+    lastTime = timestamp - (elapsed % fpsInterval);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawConnections();
+    for (let p of particles) {
+      p.update();
+      p.draw();
+    }
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>
